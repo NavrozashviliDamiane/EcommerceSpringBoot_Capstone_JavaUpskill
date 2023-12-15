@@ -1,0 +1,31 @@
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/CP_Test
+    username: postgres
+    password: damiane1997
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      jdbc-url: jdbc:postgresql://localhost:5432/CP_Test
+      auto-commit: false
+      transaction-isolation: TRANSACTION_READ_COMMITTED
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  application:
+    name: PRODUCT-SERVICE
+    
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka

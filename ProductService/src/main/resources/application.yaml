@@ -5,6 +5,7 @@ spring:
       max-request-size: 10MB
 
 
+
   datasource:
     url: jdbc:postgresql://localhost:5432/CP_Test
     username: postgres
@@ -28,3 +29,7 @@ spring:
 gcs:
   bucket:
     name: test_images_project
+
+
+server:
+  port: 8082

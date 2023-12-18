@@ -1,95 +1,133 @@
 package com.example.productservice.controller;
 
-import com.example.productservice.entity.ImageData;
 import com.example.productservice.entity.Product;
-import com.example.productservice.model.ImageDataDTO;
-import com.example.productservice.model.ProductWithImagesDTO;
+import com.example.productservice.repository.ProductRepository;
 import com.example.productservice.service.ProductService;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
 
+    @Value("${gcs.bucket.name}")
+    private String bucketName;
+
+    private final Storage storage;
+    private final ProductService productService;
+    private final ProductRepository productRepository;
+
     @Autowired
-    private ProductService productService;
+    public ProductController(ProductService productService, ProductRepository productRepository) throws IOException {
+        this.productService = productService;
+        this.productRepository = productRepository;
 
-    @PostMapping("/create")
-    public ResponseEntity<String> createProductWithImage(
-            @RequestParam("name") String name,
-            @RequestParam("description") String description,
-            @RequestParam("image") MultipartFile imageFile) {
-        try {
-            Long productId = productService.createProductWithImage(name, description, imageFile);
-            return ResponseEntity.ok().body("Product created with ID: " + productId);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating product");
-        }
-    }
+        GoogleCredentials credentials = GoogleCredentials
+                .fromStream(new FileInputStream("C:\\Users\\Admin\\Desktop\\CapstoneProject\\JavaPage_Ecommerce\\ProductService\\src\\main\\resources\\key.json"))
+                .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
 
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<String> deleteProductWithImages(@PathVariable Long productId) {
-        productService.deleteProductWithImages(productId);
-        return ResponseEntity.ok().body("Product and associated images deleted successfully");
+        storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<ProductWithImagesDTO>> getAllProductsWithImages() {
+    public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = productService.getAllProducts();
-        List<ProductWithImagesDTO> productsWithImages = products.stream()
-                .map(this::mapProductToProductWithImagesDTO)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok().body(productsWithImages);
+        return products.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(products);
     }
 
-    @PutMapping("/{productId}")
-    public ResponseEntity<String> updateProductWithImageAndFields(
-            @PathVariable Long productId,
-            @RequestParam(value = "name", required = false) String newName,
-            @RequestParam(value = "description", required = false) String newDescription,
-            @RequestParam(value = "image", required = false) MultipartFile imageFile) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        Optional<Product> product = productService.getProductById(id);
+        return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateProduct(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("price") Double price,
+            @RequestParam("quantity") Integer quantity) {
+
         try {
-            Product updatedProduct = productService.updateProductWithImageAndFields(productId, newName, newDescription, imageFile);
-            return ResponseEntity.ok().body("Product updated with ID: " + updatedProduct.getId());
+            Optional<Product> existingProductOptional = productRepository.findById(id);
+
+            if (existingProductOptional.isPresent()) {
+                Product existingProduct = existingProductOptional.get();
+                existingProduct.setName(name);
+                existingProduct.setDescription(description);
+                existingProduct.setPrice(price);
+                existingProduct.setQuantity(quantity);
+
+                if (!file.isEmpty()) {
+                    String fileName = file.getOriginalFilename();
+                    BlobId blobId = BlobId.of(bucketName, fileName);
+                    BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+                    storage.create(blobInfo, file.getBytes());
+                    String imageUrl = "https://storage.googleapis.com/" + bucketName + "/" + fileName;
+                    existingProduct.setImageUrl(imageUrl);
+                }
+
+                productRepository.save(existingProduct);
+                return ResponseEntity.ok("Product updated successfully!");
+            } else {
+                return ResponseEntity.notFound().build();
+            }
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating product");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update product.");
         }
     }
 
-    @GetMapping("/{productId}")
-    public ResponseEntity<ProductWithImagesDTO> getProductWithImageById(@PathVariable Long productId) {
-        Product product = productService.getProductById(productId);
-        if (product != null) {
-            ProductWithImagesDTO productWithImages = mapProductToProductWithImagesDTO(product);
-            return ResponseEntity.ok().body(productWithImages);
-        } else {
-            return ResponseEntity.notFound().build();
+    @PostMapping("/create")
+    public ResponseEntity<String> createProduct(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("price") Double price,
+            @RequestParam("quantity") Integer quantity) {
+
+        try {
+            String fileName = file.getOriginalFilename();
+            BlobId blobId = BlobId.of(bucketName, fileName);
+            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+            storage.create(blobInfo, file.getBytes());
+
+            String imageUrl = "https://storage.googleapis.com/" + bucketName + "/" + fileName;
+
+            Product product = new Product();
+            product.setName(name);
+            product.setDescription(description);
+            product.setPrice(price);
+            product.setQuantity(quantity);
+            product.setImageUrl(imageUrl);
+            productRepository.save(product);
+
+            return ResponseEntity.ok("Product with image uploaded successfully!");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload image or save product.");
         }
-    }
-
-    private ProductWithImagesDTO mapProductToProductWithImagesDTO(Product product) {
-        ProductWithImagesDTO productWithImages = new ProductWithImagesDTO();
-        productWithImages.setId(product.getId());
-        productWithImages.setName(product.getName());
-        productWithImages.setDescription(product.getDescription());
-
-        if (product.getImageData() != null) {
-            ImageData imageData = product.getImageData();
-            ImageDataDTO imageDataDTO = new ImageDataDTO();
-            imageDataDTO.setName(imageData.getName());
-            imageDataDTO.setType(imageData.getType());
-            productWithImages.setImageData(imageDataDTO);
-        }
-
-        return productWithImages;
     }
 }

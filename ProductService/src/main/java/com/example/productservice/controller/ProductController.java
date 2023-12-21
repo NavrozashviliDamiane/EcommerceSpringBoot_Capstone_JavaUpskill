@@ -1,9 +1,11 @@
 package com.example.productservice.controller;
 
+
+
 import com.example.productservice.entity.Product;
 import com.example.productservice.repository.ProductRepository;
 import com.example.productservice.service.ProductService;
-import com.google.auth.oauth2.GoogleCredentials;
+import com.example.productservice.service.GoogleStorageService;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
@@ -12,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import java.util.List;
@@ -33,20 +35,24 @@ public class ProductController {
     private final ProductService productService;
     private final ProductRepository productRepository;
 
+
+
+
     @Autowired
     public ProductController(ProductService productService, ProductRepository productRepository) throws IOException {
         this.productService = productService;
         this.productRepository = productRepository;
 
-        GoogleCredentials credentials = GoogleCredentials
-                .fromStream(new FileInputStream("C:\\Users\\Admin\\Desktop\\CapstoneProject\\JavaPage_Ecommerce\\ProductService\\src\\main\\resources\\key.json"))
-                .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
 
-        storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+
+        storage = StorageOptions.newBuilder().setCredentials(GoogleStorageService.generateCredentials())
+                .build()
+                .getService();
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<Product>> getAllProducts() {
+
         List<Product> products = productService.getAllProducts();
         return products.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(products);
     }

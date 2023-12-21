@@ -1,33 +1,35 @@
 version: '3'
-
 services:
-  serviceregistry:
-    image: 'damiane/serviceregistry:0.0.1'
-    container_name: serviceregistry
-    ports: 
+  service-registry:
+    image: 'damiane/service-registry:0.0.1'
+    container_name: service-registry
+    ports:
       - '8761:8761'
-
-  configserver:
-    image: 'damiane/configserver:0.0.1'
-    container_name: configserver
+  config-server:
+    image: 'damiane/config-server:0.0.1'
+    container_name: config-server
     ports:
       - '9296:9296'
     environment:
-      - EUREKA_SERVER_ADDRESS=http://serviceregistry:8761/eureka
-
-  microservices:
-    image:
-      - 'damiane/cloudgateway:1.0.0'
-      - 'damiane/productservice:1.0.0'
-    ports:
-      - '9090:9090' 
-      - '8082:8082' 
-    environment:
-      - EUREKA_SERVER_ADDRESS=http://serviceregistry:8761/eureka
-      - CONFIG_SERVER_URL=http://configserver:9296
+      - EUREKA_SERVER_ADDRESS=http://service-registry:8761/eureka
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://config-server:9296/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     depends_on:
-      - serviceregistry
-      - configserver
+      - service-registry
+  cloud-gateway:
+    image: 'damiane/cloud-gateway:latest'
+    container_name: cloud-gateway
+    ports:
+      - '9090:9090'
+    environment:
+      - EUREKA_SERVER_ADDRESS=http://service-registry:8761/eureka
+      - CONFIG_SERVER_URL=config-server
+    depends_on:
+      config-server:
+        condition: service_healthy
 
 networks:
   microservices-network:

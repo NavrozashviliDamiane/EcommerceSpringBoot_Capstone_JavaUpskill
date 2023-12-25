@@ -73,6 +73,31 @@ public class AccountController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/{accountId}")
+    public ResponseEntity<Account> getAccountById(@PathVariable Long accountId) {
+        try {
+            Account account = accountService.getAccountById(accountId);
+            return ResponseEntity.ok(account);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
+    }
+
+    @PutMapping("/addOrdersId/{accountId}")
+    public ResponseEntity<String> addOrderIdsToAccount(
+            @PathVariable("accountId") Long accountId,
+            @RequestParam Long orderIds
+    ) {
+        try {
+            accountService.addOrderIds(accountId, orderIds);
+            return ResponseEntity.ok("Order IDs added to account successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error adding order IDs to account: " + e.getMessage());
+        }
+    }
+
 
 
 }

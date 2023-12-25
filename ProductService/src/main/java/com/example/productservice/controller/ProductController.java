@@ -57,7 +57,7 @@ public class ProductController {
         return products.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(products);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("by-id/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         Optional<Product> product = productService.getProductById(id);
         return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
@@ -135,5 +135,14 @@ public class ProductController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload image or save product.");
         }
+    }
+
+    @PutMapping("/reduceQuantity/{id}")
+    public ResponseEntity<Void> reduceQuantity(
+            @PathVariable("id") long productId,
+            @RequestParam Integer quantity
+    ) {
+        productService.reduceQuantity(productId,quantity);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

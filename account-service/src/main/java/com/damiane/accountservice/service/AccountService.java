@@ -11,8 +11,11 @@ public interface AccountService {
     List<Account> getAllAccounts();
     void deleteAccount(Long accountId);
 
+    Account getAccountById(Long accountId);
+
     boolean authenticate(String username, String password);
     Set<String> getUserRoles(String username);
 
+    void addOrderIds(Long accountId, Long newOrderIds);
 }
 

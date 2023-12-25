@@ -12,10 +12,6 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class GatewayConfig {
 
-//    @Bean
-//    public GlobalFilter globalFilter(JwtAuthenticationFilter jwtAuthenticationFilter) {
-//        return (exchange, chain) -> jwtAuthenticationFilter.filter(exchange, chain);
-//    }
 
     @Value("${jwt.secret-key}")
     private String secretKey;
@@ -33,13 +29,16 @@ public class GatewayConfig {
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder, JwtAuthenticationFilter jwtAuthenticationFilter) {
         return builder.routes()
-                .route("product-service", r -> r.path("/product/**")
+                .route("product-service", r -> r.path("/product/**", "/product/search-sort/**", "/product/by-id/**")
                         .filters(f -> f.filter(jwtAuthenticationFilter))
                         .uri("lb://PRODUCT-SERVICE"))
                 .route("account-service", r -> r.path("/accounts/**")
                         .filters(f -> f.filter(jwtAuthenticationFilter))
                         .uri("lb://ACCOUNT-SERVICE"))
-                // Add more routes as needed
+                .route("order-service", r -> r.path("/orders/**")
+                        .filters(f -> f.filter(jwtAuthenticationFilter))
+                        .uri("lb://ORDER-SERVICE"))
+
                 .build();
     }
 

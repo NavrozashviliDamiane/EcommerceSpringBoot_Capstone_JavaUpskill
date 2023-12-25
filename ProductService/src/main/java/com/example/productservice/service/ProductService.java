@@ -10,4 +10,8 @@ public interface ProductService {
     Optional<Product> getProductById(Long id);
     void deleteProduct(Long id);
 
+    void updateProduct(Product updatedProduct);
+
+
+    void reduceQuantity(long productId, Integer quantity);
 }

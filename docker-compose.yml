@@ -30,7 +30,35 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
+  
+  product-service:
+    image: 'damiane/product-service:latest'
+    container_name: product-service
+    ports:
+      - '8082:8082'
+    environment:
+      - EUREKA_SERVER_ADDRESS=http://service-registry:8761/eureka
+      - CONFIG_SERVER_URL=config-server
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://psql-db:5432/CP_Test
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=damiane1997
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - psql-db
+      - config-server
+      
+  psql-db:
+    image: postgres
+    container_name: psql-db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=damiane1997
+      - POSTGRES_DB=CP_Test
+    ports:
+      - '5432:5432'
+  
+      
 
-networks:
-  microservices-network:
+
 

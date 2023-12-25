@@ -4,12 +4,12 @@ spring:
 
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:5432/accountdb
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/orderstest
     username: postgres
     password: damiane1997
     driver-class-name: org.postgresql.Driver
     hikari:
-      jdbc-url: jdbc:postgresql://localhost:5432/accountdb
+      jdbc-url: jdbc:postgresql://localhost:5432/orderstest
       auto-commit: false
       transaction-isolation: TRANSACTION_READ_COMMITTED
 
@@ -20,7 +20,7 @@ spring:
 
 
   application:
-    name: ACCOUNT-SERVICE
+    name: ORDER-SERVICE
   config:
     import: configserver:http://${CONFIG_SERVER_URL:localhost}:9296
 
@@ -28,7 +28,7 @@ spring:
 
 
 server:
-  port: 8485
+  port: 8086
 
 jwt:
   secret-key: OkvEZ85awEncAr2d3F4z2OTDHRZRyTJdGd0JSwSwSQo=

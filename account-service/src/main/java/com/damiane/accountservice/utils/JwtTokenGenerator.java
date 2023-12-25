@@ -30,7 +30,7 @@ public class JwtTokenGenerator {
     }
 
 
-    Date expirationTime = new Date(System.currentTimeMillis() + 3600 * 1000);
+    Date expirationTime = new Date(System.currentTimeMillis() + 3600 * 10000);
 
     public String generateToken(String username, Set<String> roles) {
         return Jwts.builder()

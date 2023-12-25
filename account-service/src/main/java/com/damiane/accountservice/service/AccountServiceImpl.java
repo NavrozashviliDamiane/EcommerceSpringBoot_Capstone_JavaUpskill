@@ -45,6 +45,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public Account getAccountById(Long accountId) {
+        return accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found with ID: " + accountId));
+    }
+
+    @Override
     public boolean authenticate(String username, String password) {
         Account account = accountRepository.findByUsername(username);
         return account != null && passwordEncoder.matches(password, account.getPassword());
@@ -56,6 +62,21 @@ public class AccountServiceImpl implements AccountService {
         return account != null ? account.getRoles().stream().map(Role::getName).collect(Collectors.toSet()) : Collections.emptySet();
     }
 
+
+
+
+    @Override
+    public void addOrderIds(Long accountId, Long newOrderId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found with ID: " + accountId));
+
+        Set<Long> existingOrderIds = account.getOrderIds();
+        existingOrderIds.add(newOrderId);
+
+        account.setOrderIds(existingOrderIds);
+
+        accountRepository.save(account);
+    }
 
 
 }

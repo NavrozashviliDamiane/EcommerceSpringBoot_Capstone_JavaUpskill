@@ -7,3 +7,4 @@ COPY ${JAR_FILE} cloud-gateway.jar
 ENTRYPOINT ["java", "-jar", "/cloud-gateway.jar"]
 
 EXPOSE 9090
+

@@ -21,6 +21,10 @@ public class Account {
     @Column(unique = true)
     private String username;
 
+    @ElementCollection
+    @Column(name = "order_id")
+    private Set<Long> orderIds = new HashSet<>();
+
     @Column(length = 100)
     private String password; // This should be stored as a hashed value
 

@@ -23,7 +23,8 @@ public class JwtAuthenticationFilter implements GatewayFilter, Ordered {
 
     private static final String AUTH_HEADER = "Authorization";
     private static final String TOKEN_PREFIX = "Bearer ";
-    private static final List<String> ALLOWED_PATHS = Arrays.asList("/accounts/sign-in", "/accounts/secret-key", "/product/all", "/accounts/create");
+    private static final List<String> ALLOWED_PATHS = Arrays.asList("/accounts/sign-in", "/accounts/create", "/product/all", "/product/by-id/**",
+            "/product/search-sort/**");
     private final byte[] secretKey;
 
     public JwtAuthenticationFilter(@Value("${jwt.secret-key}") String encodedSecretKey) {
@@ -44,6 +45,14 @@ public class JwtAuthenticationFilter implements GatewayFilter, Ordered {
         ServerHttpResponse response = exchange.getResponse();
 
         String path = request.getURI().getPath();
+
+        // Log the incoming path
+        System.out.println("Incoming Path: " + path);
+
+        // Log the incoming headers
+        request.getHeaders().forEach((name, values) -> {
+            System.out.println("Header: " + name + " = " + values);
+        });
 
         if (!requiresAuthentication(path)) {
             return chain.filter(exchange);

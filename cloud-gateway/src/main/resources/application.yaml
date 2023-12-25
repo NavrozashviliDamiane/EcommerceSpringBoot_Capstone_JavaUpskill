@@ -13,10 +13,15 @@ spring:
           uri: lb://PRODUCT-SERVICE
           predicates:
             - Path=/product/**
+            - Path=/product/search-sort/**
         - id: ACCOUNT-SERVICE
           uri: lb://ACCOUNT-SERVICE
           predicates:
             - Path=/accounts/**
+        - id: ORDER-SERVICE
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/orders/**
 
 # Adding JWT Secret Key Configuration
 jwt:

@@ -4,9 +4,28 @@ server:
 spring:
   application:
     name: API-GATEWAY
-  config:
-    import: configserver:http://${CONFIG_SERVER_URL:localhost}:9296
   cloud:
+    config:
+      enabled: false
+
+
+    #  config:
+    #    import: configserver:http://config-server:9296
+    #    import: configserver:http://${CONFIG_SERVER_URL:localhost}:9296
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+#  config:
+#    import: configserver:http://config-server:9296
+#    import: configserver:http://${CONFIG_SERVER_URL:localhost}:9296
+  cloud:
+    config:
+      enabled: false
     gateway:
       routes:
         - id: PRODUCT-SERVICE

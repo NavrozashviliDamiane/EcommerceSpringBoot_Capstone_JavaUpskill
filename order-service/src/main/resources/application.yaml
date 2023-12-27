@@ -4,12 +4,12 @@ spring:
 
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:5432/orderstest
+    url: jdbc:postgresql://postgresql-order:5432/orderstest
     username: postgres
     password: damiane1997
     driver-class-name: org.postgresql.Driver
     hikari:
-      jdbc-url: jdbc:postgresql://localhost:5432/orderstest
+      jdbc-url: jdbc:postgresql://postgresql-order:5432/orderstest
       auto-commit: false
       transaction-isolation: TRANSACTION_READ_COMMITTED
 
@@ -21,10 +21,24 @@ spring:
 
   application:
     name: ORDER-SERVICE
-  config:
-    import: configserver:http://${CONFIG_SERVER_URL:localhost}:9296
+  cloud:
+    config:
+      enabled: false
+#  cloud:
+#    config:
+#      enabled: false
+#
+#  config:
+#    import: configserver:http://${CONFIG_SERVER_URL:localhost}:9296
 
-
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
 
 
 server:

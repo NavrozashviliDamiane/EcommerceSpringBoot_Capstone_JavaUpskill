@@ -13,12 +13,16 @@ import java.util.List;
 public class GoogleStorageService {
 
     public static GoogleCredentials generateCredentials() throws IOException {
+        String serviceAccountFilePath = System.getenv("SERVICE_ACCOUNT_FILE_PATH");
+        if (serviceAccountFilePath == null) {
+            throw new FileNotFoundException("Service account file path not provided.");
+        }
+
         GoogleCredentials credentials = GoogleCredentials
-                .fromStream(new FileInputStream("C:\\Users\\Admin\\Desktop\\CapstoneProject\\JavaPage_Ecommerce\\ProductService\\src\\main\\resources\\key.json"))
+                .fromStream(new FileInputStream(serviceAccountFilePath))
                 .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
 
         return credentials;
-
     }
 
 

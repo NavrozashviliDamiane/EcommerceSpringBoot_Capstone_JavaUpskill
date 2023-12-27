@@ -7,12 +7,12 @@ spring:
 
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/CP_Test
+    url: jdbc:postgresql://postgresql:5432/CP_Test
     username: postgres
     password: damiane1997
     driver-class-name: org.postgresql.Driver
     hikari:
-      jdbc-url: jdbc:postgresql://localhost:5432/CP_Test
+      jdbc-url: jdbc:postgresql://postgresql:5432/CP_Test
       auto-commit: false
       transaction-isolation: TRANSACTION_READ_COMMITTED
 
@@ -22,8 +22,21 @@ spring:
     show-sql: true
   application:
     name: PRODUCT-SERVICE
-  config:
-    import: configserver:http://${CONFIG_SERVER_URL:localhost}:9296
+  cloud:
+    config:
+      enabled: false
+
+#  config:
+#    import: configserver:http://config-server:9296
+#    import: configserver:http://${CONFIG_SERVER_URL:localhost}:9296
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
 
 
 gcs:

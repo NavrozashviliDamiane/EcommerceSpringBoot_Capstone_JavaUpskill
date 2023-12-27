@@ -1,7 +1,5 @@
 package com.example.productservice.controller;
 
-
-
 import com.example.productservice.entity.Product;
 import com.example.productservice.repository.ProductRepository;
 import com.example.productservice.service.ProductService;
@@ -34,8 +32,6 @@ public class ProductController {
     private final Storage storage;
     private final ProductService productService;
     private final ProductRepository productRepository;
-
-
 
 
     @Autowired

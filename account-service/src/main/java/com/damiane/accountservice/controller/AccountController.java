@@ -4,15 +4,19 @@ import com.damiane.accountservice.entity.Account;
 import com.damiane.accountservice.model.LoginRequest;
 import com.damiane.accountservice.service.AccountService;
 import com.damiane.accountservice.utils.JwtTokenGenerator;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Key;
+import java.util.Base64;
 import java.util.List;
+import java.util.Set;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/accounts")
 public class AccountController {
     private final AccountService accountService;
@@ -26,13 +30,15 @@ public class AccountController {
     }
 
     @PostMapping("/sign-in")
-    @CrossOrigin
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+        // Perform user authentication based on credentials
         boolean isAuthenticated = accountService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
 
         if (isAuthenticated) {
+            // Generate JWT token upon successful authentication
             String jwtToken = jwtTokenGenerator.generateToken(loginRequest.getUsername(), accountService.getUserRoles(loginRequest.getUsername()));
 
+            // Return the JWT token in the response
             return ResponseEntity.ok(jwtToken);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
@@ -91,5 +97,7 @@ public class AccountController {
                     .body("Error adding order IDs to account: " + e.getMessage());
         }
     }
+
+
 
 }

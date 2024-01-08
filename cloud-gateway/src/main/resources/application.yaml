@@ -1,14 +1,28 @@
-
-#FOR DOCKER
 server:
   port: 9090
 
 spring:
   application:
     name: API-GATEWAY
+  cloud:
+    config:
+      enabled: false
 
 
-
+    #  config:
+    #    import: configserver:http://config-server:9296
+    #    import: configserver:http://${CONFIG_SERVER_URL:localhost}:9296
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+#  config:
+#    import: configserver:http://config-server:9296
+#    import: configserver:http://${CONFIG_SERVER_URL:localhost}:9296
   cloud:
     config:
       enabled: false
@@ -28,78 +42,6 @@ spring:
           predicates:
             - Path=/orders/**
 
-
-    #  config:
-    #    import: configserver:http://config-server:9296
-    #    import: configserver:http://${CONFIG_SERVER_URL:localhost}:9296
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    fetch-registry: true
-    register-with-eureka: true
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka/
-#  config:
-#    import: configserver:http://config-server:9296
-#    import: configserver:http://${CONFIG_SERVER_URL:localhost}:9296
-
-
 # Adding JWT Secret Key Configuration
 jwt:
   secret-key: OkvEZ85awEncAr2d3F4z2OTDHRZRyTJdGd0JSwSwSQo=
-
-
-
-#FOR LOCALHOST
-
-#server:
-#  port: 9090
-#
-#
-#spring:
-#  application:
-#    name: API-GATEWAY
-#
-#
-#
-#
-#  cloud:
-#    config:
-#      enabled: false
-#    gateway:
-#      routes:
-#        - id: PRODUCT-SERVICE
-#          uri: lb://PRODUCT-SERVICE
-#          predicates:
-#            - Path=/product/**
-#            - Path=/product/search-sort/**
-#        - id: ACCOUNT-SERVICE
-#          uri: lb://ACCOUNT-SERVICE
-#          predicates:
-#            - Path=/accounts/**
-#        - id: ORDER-SERVICE
-#          uri: lb://ORDER-SERVICE
-#          predicates:
-#            - Path=/orders/**
-#
-#
-#    #  config:
-#    #    import: configserver:http://config-server:9296
-#    #    import: configserver:http://${CONFIG_SERVER_URL:localhost}:9296
-#eureka:
-#  instance:
-#    prefer-ip-address: true
-#  client:
-#    fetch-registry: true
-#    register-with-eureka: true
-#    service-url:
-#      defaultZone: http://localhost:8761/eureka/
-##  config:
-##    import: configserver:http://config-server:9296
-##    import: configserver:http://${CONFIG_SERVER_URL:localhost}:9296
-#
-#
-## Adding JWT Secret Key Configuration
-#jwt:
-#  secret-key: OkvEZ85awEncAr2d3F4z2OTDHRZRyTJdGd0JSwSwSQo=

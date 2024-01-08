@@ -2,6 +2,7 @@ package com.damiane.cloudgateway.config;
 
 import com.damiane.cloudgateway.filters.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class GatewayConfig {
+
 
     @Value("${jwt.secret-key}")
     private String secretKey;
@@ -39,4 +41,7 @@ public class GatewayConfig {
 
                 .build();
     }
+
 }
+
+

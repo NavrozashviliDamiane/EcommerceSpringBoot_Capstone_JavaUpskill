@@ -2,36 +2,32 @@ version: '3.8'
 
 services:
  config-server:
-    build:
-      context: ./config-server
+    image: config-server
     ports:
       - 9296:9296
     depends_on:
       - eureka-server
 
  eureka-server:
-    build:
-      context: ./service-registry
+    image: eureka-server
     ports:
       - 8761:8761
 
  product-service:
-    build:
-      context: ./product-service
+    image: product-service
     ports:
       - 8082:8082
     environment:
       - SERVICE_ACCOUNT_FILE_PATH=/app/resources/key.json
     volumes:
-      - /C/Users/Admin/Desktop/CapstoneProject/JavaPage_Ecommerce/product-service/src/main/resources:/app/resources
+      - /C/Users/Admin/Desktop/CapstoneProject/JavaPage_Ecommerce/ProductService/src/main/resources:/app/resources
     depends_on:
       - config-server
       - eureka-server
       - postgresql
 
  account-service:
-    build:
-      context: ./account-service
+    image: account-service
     ports:
       - 8485:8485
     environment:
@@ -42,8 +38,7 @@ services:
       - postgresql-account
 
  order-service:
-    build:
-      context: ./order-service
+    image: order-service
     ports:
       - 8086:8086
 
@@ -53,8 +48,7 @@ services:
       - postgresql-order
 
  api-gateway:
-    build:
-      context: ./cloud-gateway
+    image: api-gateway
     ports:
       - 9090:9090
     depends_on:

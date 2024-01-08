@@ -4,10 +4,12 @@ import com.damiane.orderservice.entity.Order;
 import com.damiane.orderservice.entity.OrderStatus;
 import com.damiane.orderservice.model.OrderRequest;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface OrderService {
     long createOrder(OrderRequest orderRequest);
+
 
     List<Order> getOrdersByUserId(Long userId);
 
@@ -16,6 +18,7 @@ public interface OrderService {
     void cancelOrder(Long orderId);
 
     Order getOrderById(Long orderId);
+
 
 }
 

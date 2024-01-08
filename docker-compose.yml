@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+ config-server:
+    image: config-server
+    ports:
+      - 9296:9296
+    depends_on:
+      - eureka-server
+
+ eureka-server:
+    image: eureka-server
+    ports:
+      - 8761:8761
+
+ product-service:
+    image: product-service
+    ports:
+      - 8082:8082
+    environment:
+      - SERVICE_ACCOUNT_FILE_PATH=/app/resources/key.json
+    volumes:
+      - /C/Users/Admin/Desktop/CapstoneProject/JavaPage_Ecommerce/ProductService/src/main/resources:/app/resources
+    depends_on:
+      - config-server
+      - eureka-server
+      - postgresql
+
+ account-service:
+    image: account-service
+    ports:
+      - 8485:8485
+    environment:
+      - SECRET_KEY=OkvEZ85awEncAr2d3F4z2OTDHRZRyTJdGd0JSwSwSQo=
+    depends_on:
+      - config-server
+      - eureka-server
+      - postgresql-account
+
+ order-service:
+    image: order-service
+    ports:
+      - 8086:8086
+
+    depends_on:
+      - config-server
+      - eureka-server
+      - postgresql-order
+
+ api-gateway:
+    image: api-gateway
+    ports:
+      - 9090:9090
+    depends_on:
+      - config-server
+      - eureka-server
+ 
+     
+
+ postgresql:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: damiane1997
+      POSTGRES_DB: CP_Test
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+ postgresql-account:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: damiane1997
+      POSTGRES_DB: accountdb
+    volumes:
+      - postgresql-account-data:/var/lib/postgresql/data
+ postgresql-order:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: damiane1997
+      POSTGRES_DB: orderstest
+    volumes:
+      - postgresql-order-data:/var/lib/postgresql/data
+
+ 
+    
+
+volumes:
+ postgresql-data:
+ postgresql-account-data:
+ postgresql-order-data:

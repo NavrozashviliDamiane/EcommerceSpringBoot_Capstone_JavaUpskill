@@ -5,11 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,7 +21,6 @@ public class Order {
     @Column(name = "user_id")
     private Long userId;
 
-    // You can adjust this based on your requirements (e.g., JSON serialization)
     @Column(name = "productId")
     private Long productId;
 
@@ -53,7 +48,5 @@ public class Order {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-
 
 }

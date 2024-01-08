@@ -9,3 +9,12 @@ eureka:
     fetch-registry: false
 
 
+#server:
+#  port: 8761
+#
+#eureka:
+#  instance:
+#    hostname: localhost
+#  client:
+#    register-with-eureka: false
+#    fetch-registry: false

@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
@@ -18,14 +17,11 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-
     @PostMapping("/place")
     public ResponseEntity<Long> placeOrder(@RequestBody OrderRequest orderRequest) {
         Long orderId = orderService.createOrder(orderRequest);
         return new ResponseEntity<>(orderId, HttpStatus.OK);
     }
-
-
 
     @GetMapping("/user/{userId}")
     public List<Order> getOrdersByUserId(@PathVariable Long userId) {
@@ -47,4 +43,3 @@ public class OrderController {
         return orderService.getOrderById(orderId);
     }
 }
-

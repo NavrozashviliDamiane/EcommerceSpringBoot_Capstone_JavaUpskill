@@ -119,6 +119,3 @@ public class JwtAuthenticationFilter implements GatewayFilter, Ordered {
         return -1; // Set the filter order
     }
 }
-
-
-

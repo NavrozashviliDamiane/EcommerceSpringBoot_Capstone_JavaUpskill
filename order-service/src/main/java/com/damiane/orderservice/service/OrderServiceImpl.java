@@ -8,10 +8,7 @@ import com.damiane.orderservice.model.OrderRequest;
 import com.damiane.orderservice.respository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,8 +23,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private AccountService accountService;
-
-
 
     @Override
     public long createOrder(OrderRequest orderRequest) {
@@ -48,8 +43,6 @@ public class OrderServiceImpl implements OrderService {
                 .updatedAt(currentDateTime)
                 .build();
 
-
-
         order = orderRepository.save(order);
 
 
@@ -58,7 +51,6 @@ public class OrderServiceImpl implements OrderService {
         return order.getOrderId();
 
     }
-
 
     @Override
     public List<Order> getOrdersByUserId(Long userId) {
